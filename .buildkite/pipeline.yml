@@ -8,7 +8,7 @@ steps:
   - label: ':hammer: Running tests'
     key: tests
     command:
-      - yarn config set "@fortawesome:registry" https://npm.fontawesome.com/
+      - yarn config set "@fortawesome:registry" https://registry.yarnpkg.com/
       - cd packages/website
       - yarn
       - yarn test
