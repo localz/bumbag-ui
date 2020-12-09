@@ -13,7 +13,7 @@ steps:
       - npm config set "//npm.fontawesome.com/:_authToken" $${FONTAWESOME_NPM_AUTH_TOKEN}
       - yarn
       - yarn test
-      - yarn buildkite-build
+      - yarn build
     plugins:
       - docker-login#v2.0.1:
           username: localzservice
