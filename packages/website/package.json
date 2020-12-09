@@ -66,6 +66,7 @@
   "license": "MIT",
   "scripts": {
     "build": "gatsby build && yarn playroom:build",
+    "buildkite-build": "gatsby build",
     "develop": "gatsby develop",
     "inject-types": "node scripts/inject-types.js",
     "lint": "eslint src/ --ext js,ts,tsx",
