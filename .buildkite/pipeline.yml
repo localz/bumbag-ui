@@ -11,7 +11,7 @@ steps:
       - cd packages/website
       - npm config set "@fortawesome:registry" https://npm.fontawesome.com/
       - npm config set "//npm.fontawesome.com/:_authToken" $${FONTAWESOME_NPM_AUTH_TOKEN}
-      - yarn
+      - yarn install
       - yarn test
       - yarn build
     plugins:
@@ -27,12 +27,12 @@ steps:
     key: build
     branches: develop master
     command:
-      - npm config set "//registry.npmjs.org/:_authToken" $${NPM_TOKEN}
-      - npm config set "//npm.fontawesome.com/:_authToken" $${FONTAWESOME_NPM_AUTH_TOKEN}
+      - cd packages/website
       - npm config set "@fortawesome:registry" https://npm.fontawesome.com/
-      - yarn run build
-      - yarn --cwd packages/website install
-      - yarn --cwd packages/website run buildkite-build
+      - npm config set "//npm.fontawesome.com/:_authToken" $${FONTAWESOME_NPM_AUTH_TOKEN}
+      - yarn install
+      - yarn test
+      - yarn build
     plugins:
       - docker-login#v2.0.1:
           username: localzservice
