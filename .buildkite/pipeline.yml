@@ -1,0 +1,138 @@
+env:
+  NODE_VERSION: '14.15'
+  S3_PATH: 'style'
+  DEV_ROLE_ARN: 'arn:aws:iam::981939279353:role/App-Deploy-develop'
+  PROD_ROLE_ARN: 'arn:aws:iam::981939279353:role/App-Deploy-master'
+
+steps:
+  - label: ':hammer: Running tests'
+    key: tests
+    command:
+      - yarn config set "@fortawesome:registry" https://npm.fontawesome.com/
+      - cd packages/website
+      - yarn
+      - yarn test
+      - yarn buildkite-build
+    plugins:
+      - docker-login#v2.0.1:
+          username: localzservice
+          password-env: DOCKER_LOGIN_PASSWORD
+      - docker#v3.7.0:
+          image: localz/buildkite-node:${NODE_VERSION}
+          environment:
+            - FONTAWESOME_NPM_AUTH_TOKEN
+
+  - label: ':building_construction: Building static assets'
+    key: build
+    branches: develop master
+    command:
+      - npm config set "//registry.npmjs.org/:_authToken" $${NPM_TOKEN}
+      - npm config set "//npm.fontawesome.com/:_authToken" $${FONTAWESOME_NPM_AUTH_TOKEN}
+      - npm config set "@fortawesome:registry" https://npm.fontawesome.com/
+      - yarn run build
+      - yarn --cwd packages/website install
+      - yarn --cwd packages/website run buildkite-build
+    plugins:
+      - docker-login#v2.0.1:
+          username: localzservice
+          password-env: DOCKER_LOGIN_PASSWORD
+      - docker#v3.7.0:
+          image: localz/buildkite-node:${NODE_VERSION}
+          environment:
+            - NPM_TOKEN
+      - artifacts#v1.3.0:
+          upload: "public/*"
+
+  ########################## DEV ##########################
+
+  - label: ':s3: :blue_book: Deploying to dev'
+    depends_on: build
+    key: dev-style-deploy
+    branches: develop
+    concurrency: 1
+    concurrency_group: ${S3_PATH}-dev
+    agents:
+      queue: develop-deploy
+    commands:
+      - echo "Deploying to dev"
+    plugins:
+      - cultureamp/aws-assume-role#v0.1.0:
+          role: ${DEV_ROLE_ARN}
+      - docker-login#v2.0.1:
+          username: localzservice
+          password-env: DOCKER_LOGIN_PASSWORD
+      - docker#v3.7.0:
+          image: localz/buildkite-node:${NODE_VERSION}
+      - artifacts#v1.3.0:
+          download: "public/*"
+      - localz/aws-s3-sync#v0.1.4:
+          source: public/
+          destination: s3://webapps-${BUILDKITE_BRANCH}.localz.io/${S3_PATH}
+          acl: public-read
+
+  - block: ':arrow_backward: Rollback dev'
+    depends_on: dev-style-deploy
+    key: dev-style-rollback
+    branches: develop
+    fields:
+      - text: Enter version you would like to rollback to (ie. 1.0.1)
+        key: rollback-version
+
+  - label: ':s3: :dash: Rollback dev'
+    depends_on: dev-style-rollback
+    branches: develop
+    concurrency: 1
+    concurrency_group: ${S3_PATH}-dev
+    command: ./.buildkite/ci/rollback-dashboard.sh
+    agents:
+      queue: develop-deploy
+    plugins:
+      - cultureamp/aws-assume-role#v0.1.0:
+          role: ${DEV_ROLE_ARN}
+
+  ########################## PROD ##########################
+
+  - label: ':s3: :blue_book: Deploying to prod'
+    depends_on: build
+    key: prod-style-deploy
+    branches: master
+    concurrency: 1
+    concurrency_group: ${S3_PATH}-prod
+    agents:
+      queue: deploy
+    commands:
+      - echo "Deploying to prod"
+    plugins:
+      - cultureamp/aws-assume-role#v0.1.0:
+          role: ${PROD_ROLE_ARN}
+      - docker-login#v2.0.1:
+          username: localzservice
+          password-env: DOCKER_LOGIN_PASSWORD
+      - docker#v3.7.0:
+          image: localz/buildkite-node:${NODE_VERSION}
+      - artifacts#v1.3.0:
+          download: "public/*"
+      - localz/aws-s3-sync#v0.1.4:
+          source: public/
+          destination: s3://webapps-${BUILDKITE_BRANCH}.localz.io/${S3_PATH}/blue
+          acl: public-read
+
+  - block: ':arrow_backward: Rollback prod'
+    depends_on: prod-style-deploy
+    key: prod-style-rollback
+    branches: master
+    fields:
+      - text: Enter version you would like to rollback to (ie. 1.0.1)
+        key: rollback-version
+
+  - label: ':s3: :dash: Rollback prod'
+    depends_on: prod-style-rollback
+    branches: master
+    concurrency: 1
+    concurrency_group: ${S3_PATH}-prod
+    command: ./.buildkite/ci/rollback.sh
+    agents:
+      queue: deploy
+    plugins:
+      - cultureamp/aws-assume-role#v0.1.0:
+          role: ${PROD_ROLE_ARN}
