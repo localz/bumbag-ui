@@ -8,10 +8,11 @@ steps:
   - label: ':hammer: Running tests'
     key: tests
     command:
-      - cd packages/website
       - npm config set "@fortawesome:registry" https://npm.fontawesome.com/
       - npm config set "//npm.fontawesome.com/:_authToken" $${FONTAWESOME_NPM_AUTH_TOKEN}
-      - yarn install
+      - yarn global add lerna
+      - lerna run build
+      - cd packages/website
       - yarn test
       - yarn build
     plugins:
