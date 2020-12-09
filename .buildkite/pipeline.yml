@@ -8,8 +8,9 @@ steps:
   - label: ':hammer: Running tests'
     key: tests
     command:
-      - yarn config set "@fortawesome:registry" https://registry.yarnpkg.com/
       - cd packages/website
+      - npm config set "@fortawesome:registry" https://npm.fontawesome.com/
+      - npm config set "//npm.fontawesome.com/:_authToken" $${FONTAWESOME_NPM_AUTH_TOKEN}
       - yarn
       - yarn test
       - yarn buildkite-build
