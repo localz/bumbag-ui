@@ -19,37 +19,22 @@ steps:
       - docker#v3.7.0:
           image: localz/buildkite-node:${NODE_VERSION}
 
-  - label: ':building_construction: Building static assets'
-    depends_on: tests
-    key: build
-    # branches: develop master
-    command:
-      - yarn global add lerna
-      - yarn install
-      - yarn build
-      - cd packages/website
-      - yarn build
-    plugins:
-      - docker-login#v2.0.1:
-          username: localzservice
-          password-env: DOCKER_LOGIN_PASSWORD
-      - docker#v3.7.0:
-          image: localz/buildkite-node:${NODE_VERSION}
-      - artifacts#v1.3.0:
-          upload: "packages/website/public/*"
-
   ########################## DEV ##########################
 
   - label: ':s3: :blue_book: Deploying to dev'
     depends_on: build
     key: dev-style-deploy
-    # branches: develop
+    branches: develop
     concurrency: 1
     concurrency_group: ${S3_PATH}-dev
     agents:
       queue: develop-deploy
     commands:
-      - echo "Deploying to dev"
+      - yarn global add lerna
+      - yarn install
+      - yarn build
+      - cd packages/website
+      - yarn build
     plugins:
       - cultureamp/aws-assume-role#v0.1.0:
           role: ${DEV_ROLE_ARN}
@@ -58,10 +43,8 @@ steps:
           password-env: DOCKER_LOGIN_PASSWORD
       - docker#v3.7.0:
           image: localz/buildkite-node:${NODE_VERSION}
-      - artifacts#v1.3.0:
-          download: "packages/website/public/*"
       - localz/aws-s3-sync#v0.1.4:
-          source: packages/website/public/*
+          source: packages/website/public/
           destination: s3://webapps-${BUILDKITE_BRANCH}.localz.io/${S3_PATH}
           acl: public-read
 
