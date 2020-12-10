@@ -22,7 +22,7 @@ steps:
   ########################## DEV ##########################
 
   - label: ':s3: :blue_book: Deploying to dev'
-    depends_on: build
+    depends_on: tests
     key: dev-style-deploy
     branches: develop
     concurrency: 1
@@ -71,7 +71,7 @@ steps:
   ########################## PROD ##########################
 
   - label: ':s3: :blue_book: Deploying to prod'
-    depends_on: build
+    depends_on: tests
     key: prod-style-deploy
     branches: master
     concurrency: 1
@@ -79,7 +79,11 @@ steps:
     agents:
       queue: deploy
     commands:
-      - echo "Deploying to prod"
+      - yarn global add lerna
+      - yarn install
+      - yarn build
+      - cd packages/website
+      - yarn build
     plugins:
       - cultureamp/aws-assume-role#v0.1.0:
           role: ${PROD_ROLE_ARN}
@@ -88,10 +92,8 @@ steps:
           password-env: DOCKER_LOGIN_PASSWORD
       - docker#v3.7.0:
           image: localz/buildkite-node:${NODE_VERSION}
-      - artifacts#v1.3.0:
-          download: "public/*"
       - localz/aws-s3-sync#v0.1.4:
-          source: public/
+          source: packages/website/public/
           destination: s3://webapps-${BUILDKITE_BRANCH}.localz.io/${S3_PATH}/blue
           acl: public-read
 
