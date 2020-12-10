@@ -10,7 +10,6 @@ steps:
     command:
       - yarn global add lerna
       - yarn install
-      - yarn build
       - cd packages/website
       - yarn test
     plugins:
@@ -37,7 +36,7 @@ steps:
       - docker#v3.7.0:
           image: localz/buildkite-node:${NODE_VERSION}
       - artifacts#v1.3.0:
-          upload: "public/*"
+          upload: "packages/website/public/*"
 
   ########################## DEV ##########################
 
@@ -60,9 +59,9 @@ steps:
       - docker#v3.7.0:
           image: localz/buildkite-node:${NODE_VERSION}
       - artifacts#v1.3.0:
-          download: "public/*"
+          download: "packages/website/public/*"
       - localz/aws-s3-sync#v0.1.4:
-          source: public/
+          source: packages/website/public/*
           destination: s3://webapps-${BUILDKITE_BRANCH}.localz.io/${S3_PATH}
           acl: public-read
 
