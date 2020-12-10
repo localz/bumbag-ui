@@ -13,7 +13,6 @@ steps:
       - yarn build
       - cd packages/website
       - yarn test
-      - yarn build
     plugins:
       - docker-login#v2.0.1:
           username: localzservice
@@ -24,7 +23,7 @@ steps:
   - label: ':building_construction: Building static assets'
     depends_on: tests
     key: build
-    branches: develop master
+    # branches: develop master
     command:
       - yarn global add lerna
       - yarn install
@@ -45,7 +44,7 @@ steps:
   - label: ':s3: :blue_book: Deploying to dev'
     depends_on: build
     key: dev-style-deploy
-    branches: develop
+    # branches: develop
     concurrency: 1
     concurrency_group: ${S3_PATH}-dev
     agents:
