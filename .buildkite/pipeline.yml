@@ -19,14 +19,15 @@ steps:
       - docker#v3.7.0:
           image: localz/buildkite-node:${NODE_VERSION}
 
+  - wait: ~
+
   ########################## DEV ##########################
 
   - label: ':s3: :blue_book: Deploying to dev'
-    depends_on: tests
     key: dev-style-deploy
     branches: develop
     concurrency: 1
-    concurrency_group: ${S3_PATH}-dev
+    concurrency_group: ${S3_PATH}-dev-deploy
     agents:
       queue: develop-deploy
     commands:
@@ -60,7 +61,7 @@ steps:
     depends_on: dev-style-rollback
     branches: develop
     concurrency: 1
-    concurrency_group: ${S3_PATH}-dev
+    concurrency_group: ${S3_PATH}-dev-deploy
     command: ./.buildkite/ci/rollback-dashboard.sh
     agents:
       queue: develop-deploy
@@ -71,11 +72,10 @@ steps:
   ########################## PROD ##########################
 
   - label: ':s3: :blue_book: Deploying to prod'
-    depends_on: tests
     key: prod-style-deploy
     branches: master
     concurrency: 1
-    concurrency_group: ${S3_PATH}-prod
+    concurrency_group: ${S3_PATH}-prod-deploy
     agents:
       queue: deploy
     commands:
@@ -109,7 +109,7 @@ steps:
     depends_on: prod-style-rollback
     branches: master
     concurrency: 1
-    concurrency_group: ${S3_PATH}-prod
+    concurrency_group: ${S3_PATH}-prod-deploy
     command: ./.buildkite/ci/rollback.sh
     agents:
       queue: deploy
