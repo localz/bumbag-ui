@@ -1,7 +1,6 @@
 {
   "private": true,
   "repository": "git@github.com:bumbag/bumbag-ui.git",
-  "version": "0.0.1",
   "author": "jxom <jakemoxey@gmail.com>",
   "license": "MIT",
   "scripts": {
