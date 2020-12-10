@@ -10,7 +10,7 @@ steps:
     command:
       # - npm config set "@fortawesome:registry" https://registry.yarnpkg.com/
       # - npm config set "@fortawesome:registry" https://npm.fontawesome.com/
-      - npm config set "//npm.fontawesome.com/:_authToken" $${FONTAWESOME_NPM_AUTH_TOKEN}
+      # - npm config set "//npm.fontawesome.com/:_authToken" $${FONTAWESOME_NPM_AUTH_TOKEN}
       - yarn global add lerna
       - yarn install
       - yarn build
@@ -30,11 +30,11 @@ steps:
     key: build
     branches: develop master
     command:
-      - cd packages/website
-      - npm config set "@fortawesome:registry" https://npm.fontawesome.com/
       - npm config set "//npm.fontawesome.com/:_authToken" $${FONTAWESOME_NPM_AUTH_TOKEN}
+      - yarn global add lerna
       - yarn install
-      - yarn test
+      - yarn build
+      - cd packages/website
       - yarn build
     plugins:
       - docker-login#v2.0.1:
@@ -43,7 +43,7 @@ steps:
       - docker#v3.7.0:
           image: localz/buildkite-node:${NODE_VERSION}
           environment:
-            - NPM_TOKEN
+            - FONTAWESOME_NPM_AUTH_TOKEN
       - artifacts#v1.3.0:
           upload: "public/*"
 
