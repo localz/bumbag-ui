@@ -11,4 +11,4 @@ fi
 
 echo "Attempting rollback to ${PREVIOUS_VERSION}.."
 
-aws s3 sync "s3://webapps-${BUILDKITE_BRANCH}.localz.io/${S3_PATH}/${PREVIOUS_VERSION}" "s3://webapps-${BUILDKITE_BRANCH}.localz.io/${S3_PATH}/latest" --delete --acl public-acl --dry-run
+aws s3 sync "s3://webapps-${BUILDKITE_BRANCH}.localz.io/${S3_PATH}/${PREVIOUS_VERSION}" "s3://webapps-${BUILDKITE_BRANCH}.localz.io/${S3_PATH}/latest" --delete --acl public-read --dry-run
