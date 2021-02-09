@@ -1,21 +1,32 @@
-import * as React from 'react';
-import _merge from 'lodash/merge';
-import _omit from 'lodash/omit';
-import queryString from 'query-string';
-
-import { Provider, ToastManager } from 'bumbag';
-import defaultTheme from '../theme';
-import { themeMap } from '../utils/theme';
+import React, { useState, useEffect } from 'react';
+import _isEmpty from 'lodash/isEmpty';
+import { getTheme, APPS } from '@localz/localz-bumbag-theme';
+import { Provider, ToastManager, Spinner, Container } from 'bumbag';
 
 export default function ElementWrapper(props: { element: React.ReactNode }) {
+  const [theme, setTheme] = useState({});
   const { element } = props;
-  const themeName = (queryString.parse(typeof window !== 'undefined' ? window.location.search : '') || {}).theme;
-  const targetTheme = themeMap[themeName] || {};
-  const theme = _merge(defaultTheme, _omit(targetTheme, 'SideNav', 'PageWithSidebar'));
 
+  useEffect(() => {
+    const getLocalzTheme = async () => {
+      try {
+        const localzTheme = await getTheme({ projectId: 'projectId', isDev: true, app: APPS.dashboard });
+        setTheme(localzTheme);
+      } catch (e) {
+        console.log(`Failed to get theme - ${JSON.stringify(e)}`);
+      }
+    };
+    getLocalzTheme();
+  }, []);
   return (
     <Provider theme={theme}>
-      {element}
+      {_isEmpty(theme) ? (
+        <Container display="flex" justifyContent="center" alignItems="center" height="calc(100vh)">
+          <Spinner size="large" />
+        </Container>
+      ) : (
+        element
+      )}
       <ToastManager isStacked={false} />
     </Provider>
   );
