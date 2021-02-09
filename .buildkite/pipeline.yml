@@ -8,6 +8,7 @@ steps:
   - label: ":hammer: Running tests"
     key: tests
     command:
+      - npm config set "//registry.npmjs.org/:_authToken" $${NPM_TOKEN}
       - yarn global add lerna
       - yarn install
       - cd packages/website
@@ -33,6 +34,7 @@ steps:
     agents:
       queue: develop-deploy
     commands:
+      - npm config set "//registry.npmjs.org/:_authToken" $${NPM_TOKEN}
       - yarn global add lerna
       - yarn install
       - yarn build
@@ -84,6 +86,7 @@ steps:
     agents:
       queue: deploy
     commands:
+      - npm config set "//registry.npmjs.org/:_authToken" $${NPM_TOKEN}
       - yarn global add lerna
       - yarn install
       - yarn build
