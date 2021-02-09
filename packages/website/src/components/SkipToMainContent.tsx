@@ -13,13 +13,10 @@ const SkipToMainContentButton = styled(Button)`
 
 const SkipToMainContent = () => {
   return (
-    <SkipToMainContentButton
-      use="a"
-      href="#main-content"
-    >
+    <SkipToMainContentButton use="a" href="#main-content">
       Skip to Main Content
     </SkipToMainContentButton>
-  )
-}
+  );
+};
 
 export default SkipToMainContent;

@@ -1,8 +1,9 @@
 import * as React from 'react';
 import { Link, useStaticQuery, graphql } from 'gatsby';
-import { Box, Input, Stack, SideNav as _SideNav, usePage, applyTheme } from 'bumbag';
+import { Box, Input, Stack, SideNav as _SideNav, usePage, applyTheme, Text } from 'bumbag';
 import _startCase from 'lodash/startCase';
 import _uniqBy from 'lodash/uniqBy';
+import _includes from 'lodash/includes';
 
 const SearchInput = applyTheme(Input, {
   defaultProps: {
@@ -57,6 +58,8 @@ const SideNav = applyTheme(_SideNav, {
     },
   },
 });
+
+const Components = ['button'];
 
 export default function Sidebar(props: any) {
   const { items, orders, path } = props;
@@ -133,7 +136,7 @@ function SideNavItem({ orderItem, searchText, sidebarItems, sidebar }: any) {
                     typeof window !== 'undefined' ? window.location.search : ''
                   }`}
                 >
-                  {title}
+                  <Text color={_includes(Components, item.name) ? 'secondary' : 'unset'}>{title}</Text>
                 </Link>
               </SideNav.Item>
             );

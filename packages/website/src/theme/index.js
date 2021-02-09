@@ -64,7 +64,20 @@ export default {
       `,
     },
   },
+  palette: {
+    primary: '#102e4e',
+    secondary: '#e37700',
+  },
   Button: {
+    styles: {
+      base: css`
+        min-width: 160px;
+        height: 48px;
+        min-height: unset;
+        border-radius: 4px;
+        box-shadow: 0 0 4px 0 rgba(4, 30, 66, 0.2);
+      `,
+    },
     variants: {
       cta: {
         defaultProps: {
