@@ -1,13 +1,14 @@
 env:
-  NODE_VERSION: '14.15'
-  S3_PATH: 'style'
-  DEV_ROLE_ARN: 'arn:aws:iam::981939279353:role/App-Deploy-develop'
-  PROD_ROLE_ARN: 'arn:aws:iam::981939279353:role/App-Deploy-master'
+  NODE_VERSION: "14.15"
+  S3_PATH: "style"
+  DEV_ROLE_ARN: "arn:aws:iam::981939279353:role/App-Deploy-develop"
+  PROD_ROLE_ARN: "arn:aws:iam::981939279353:role/App-Deploy-master"
 
 steps:
-  - label: ':hammer: Running tests'
+  - label: ":hammer: Running tests"
     key: tests
     command:
+      - npm config set "//registry.npmjs.org/:_authToken" $${NPM_TOKEN}
       - yarn global add lerna
       - yarn install
       - cd packages/website
@@ -18,12 +19,14 @@ steps:
           password-env: DOCKER_LOGIN_PASSWORD
       - docker#v3.7.0:
           image: localz/buildkite-node:${NODE_VERSION}
+          environment:
+            - NPM_TOKEN
 
   - wait: ~
 
   ########################## DEV ##########################
 
-  - label: ':s3: :blue_book: Deploying to dev'
+  - label: ":s3: :blue_book: Deploying to dev"
     key: dev-style-deploy
     branches: develop
     concurrency: 1
@@ -31,6 +34,7 @@ steps:
     agents:
       queue: develop-deploy
     commands:
+      - npm config set "//registry.npmjs.org/:_authToken" $${NPM_TOKEN}
       - yarn global add lerna
       - yarn install
       - yarn build
@@ -44,13 +48,15 @@ steps:
           password-env: DOCKER_LOGIN_PASSWORD
       - docker#v3.7.0:
           image: localz/buildkite-node:${NODE_VERSION}
+          environment:
+            - NPM_TOKEN
       - localz/aws-s3-sync#v0.1.4:
           source: packages/website/public/
           destination: s3://webapps-${BUILDKITE_BRANCH}.localz.io/${S3_PATH}
           acl: public-read
           package_json: packages/website/package.json
 
-  - block: ':arrow_backward: Rollback dev'
+  - block: ":arrow_backward: Rollback dev"
     depends_on: dev-style-deploy
     key: dev-style-rollback
     branches: develop
@@ -58,7 +64,7 @@ steps:
       - text: Enter version you would like to rollback to (ie. 1.0.1)
         key: rollback-version
 
-  - label: ':s3: :dash: Rollback dev'
+  - label: ":s3: :dash: Rollback dev"
     depends_on: dev-style-rollback
     branches: develop
     concurrency: 1
@@ -72,7 +78,7 @@ steps:
 
   ########################## PROD ##########################
 
-  - label: ':s3: :blue_book: Deploying to prod'
+  - label: ":s3: :blue_book: Deploying to prod"
     key: prod-style-deploy
     branches: master
     concurrency: 1
@@ -80,6 +86,7 @@ steps:
     agents:
       queue: deploy
     commands:
+      - npm config set "//registry.npmjs.org/:_authToken" $${NPM_TOKEN}
       - yarn global add lerna
       - yarn install
       - yarn build
@@ -93,13 +100,15 @@ steps:
           password-env: DOCKER_LOGIN_PASSWORD
       - docker#v3.7.0:
           image: localz/buildkite-node:${NODE_VERSION}
+          environment:
+            - NPM_TOKEN
       - localz/aws-s3-sync#v0.1.4:
           source: packages/website/public/
           destination: s3://webapps-${BUILDKITE_BRANCH}.localz.io/${S3_PATH}/blue
           acl: public-read
           package_json: packages/website/package.json
 
-  - block: ':arrow_backward: Rollback prod'
+  - block: ":arrow_backward: Rollback prod"
     depends_on: prod-style-deploy
     key: prod-style-rollback
     branches: master
@@ -107,7 +116,7 @@ steps:
       - text: Enter version you would like to rollback to (ie. 1.0.1)
         key: rollback-version
 
-  - label: ':s3: :dash: Rollback prod'
+  - label: ":s3: :dash: Rollback prod"
     depends_on: prod-style-rollback
     branches: master
     concurrency: 1
