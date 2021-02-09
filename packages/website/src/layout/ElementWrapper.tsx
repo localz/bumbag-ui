@@ -10,7 +10,11 @@ export default function ElementWrapper(props: { element: React.ReactNode }) {
   useEffect(() => {
     const getLocalzTheme = async () => {
       try {
-        const localzTheme = await getTheme({ projectId: 'projectId', isDev: true, app: APPS.dashboard });
+        const localzTheme = await getTheme({
+          projectId: 'projectId',
+          isDev: window.location.host !== 'style.localz.io',
+          app: APPS.dashboard,
+        });
         setTheme(localzTheme);
       } catch (e) {
         console.error(e, 'Failed to get theme');
