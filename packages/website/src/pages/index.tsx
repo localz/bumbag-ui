@@ -48,8 +48,8 @@ export default function Index() {
       >
         <Stack display="flex" flexDirection="column" spacing="major-5" alignItems="center">
           <Heading fontSize="600" textAlign="center">
-            Build <Text color="primary">accessible</Text> & <Text color="primary">themeable</Text> React applications
-            with your Bumbag
+            Build <Text color="secondary">accessible</Text> & <Text color="secondary">themeable</Text> React
+            applications with your Bumbag
           </Heading>
           <Paragraph fontSize={{ default: '400', mobile: '300' }} color="text100" textAlign="center">
             Bumbag is a friendly React UI Kit suitable for MVPs or large-scale applications.

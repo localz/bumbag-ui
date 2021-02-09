@@ -12,31 +12,25 @@ path: /getting-started/
 Firstly, install Bumbag:
 
 ```
-npm install bumbag
+npm install @localz/localz-bumbag-theme
 ```
 
 Once you have installed the `bumbag` module, wrap your application in a "`<BumbagProvider>`":
 
 ```jsx
-import { Provider as BumbagProvider } from 'bumbag';
+import { Provider as BumbagProvider } from "bumbag";
 
-const App = () => (
-  <BumbagProvider>
-    Hello world!
-  </BumbagProvider>
-);
+const App = () => <BumbagProvider>Hello world!</BumbagProvider>;
 ```
 
 Now, you can start using the Bumbag components:
 
 ```jsx
-import { Button, Provider as BumbagProvider } from 'bumbag';
+import { Button, Provider as BumbagProvider } from "bumbag";
 
 const MyApp = () => (
   <BumbagProvider>
-    <Button>
-      Hello world!
-    </Button>
+    <Button>Hello world!</Button>
   </BumbagProvider>
 );
 ```
@@ -55,27 +49,25 @@ Then, we will add this plugin to your app's `gatsby-config.js`:
 
 ```js
 module.exports = {
-  plugins: ['gatsby-plugin-bumbag']
-}
+  plugins: ["gatsby-plugin-bumbag"],
+};
 ```
 
 After that, we will add the `<BumbagProvider>` to our `gatsby-browser.js` file:
 
 ```jsx
-import React from 'react';
-import { Provider as BumbagProvider } from 'bumbag';
+import React from "react";
+import { Provider as BumbagProvider } from "bumbag";
 
 export const wrapRootElement = ({ element, ...props }) => (
-  <BumbagProvider>
-    {element}
-  </BumbagProvider>
+  <BumbagProvider>{element}</BumbagProvider>
 );
 ```
 
 We will also have to add a few lines to our `gatsby-ssr.js` file:
 
 ```jsx
-export { wrapRootElement } from './gatsby-browser';
+export { wrapRootElement } from "./gatsby-browser";
 ```
 
 Now, you can freely use Bumbag in your Gatsby app!
@@ -93,26 +85,26 @@ npm install bumbag-server
 Open up your `_document.js` file, and add the following:
 
 ```jsx
-import Document, { Head, Html, Main, NextScript } from 'next/document'
-import { extractCritical } from 'bumbag-server'
-import { InitializeColorMode } from 'bumbag'
+import Document, { Head, Html, Main, NextScript } from "next/document";
+import { extractCritical } from "bumbag-server";
+import { InitializeColorMode } from "bumbag";
 
 export default class MyDocument extends Document {
   static async getInitialProps(ctx) {
-    const initialProps = await Document.getInitialProps(ctx)
-    const styles = extractCritical(initialProps.html)
+    const initialProps = await Document.getInitialProps(ctx);
+    const styles = extractCritical(initialProps.html);
     return {
       ...initialProps,
       styles: (
         <>
           {initialProps.styles}
           <style
-            data-emotion-css={styles.ids.join(' ')}
+            data-emotion-css={styles.ids.join(" ")}
             dangerouslySetInnerHTML={{ __html: styles.css }}
           />
         </>
       ),
-    }
+    };
   }
 
   render() {
@@ -134,10 +126,9 @@ Then, open up your `_app.js` file, and add the `<BumbagProvider>`:
 
 **Make sure you add `isSSR` as a prop to `BumbagProvider`. This will help with color mode consistency.**
 
-
 ```jsx
-import NextApp from 'next/app';
-import { Provider as BumbagProvider } from 'bumbag';
+import NextApp from "next/app";
+import { Provider as BumbagProvider } from "bumbag";
 
 export default class App extends NextApp {
   render() {
