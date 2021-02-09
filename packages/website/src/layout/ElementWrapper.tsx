@@ -13,7 +13,7 @@ export default function ElementWrapper(props: { element: React.ReactNode }) {
         const localzTheme = await getTheme({ projectId: 'projectId', isDev: true, app: APPS.dashboard });
         setTheme(localzTheme);
       } catch (e) {
-        console.log(`Failed to get theme - ${JSON.stringify(e)}`);
+        console.error(e, 'Failed to get theme');
       }
     };
     getLocalzTheme();
