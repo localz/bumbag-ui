@@ -1,8 +1,9 @@
 import * as React from 'react';
 import { Box as ReakitBox, DialogProps as ReakitDialogProps, useDialog as useReakitDialog } from 'reakit';
+import _merge from 'lodash/merge';
 
 import { AnimateProps, Placement } from '../types';
-import { useClassName, createComponent, createElement, createHook, merge, omitCSSProps } from '../utils';
+import { useClassName, createComponent, createElement, createHook, merge, omitCSSProps, pickCSSProps } from '../utils';
 import { Box, BoxProps } from '../Box';
 
 import { ModalBackdrop } from './ModalBackdrop';
@@ -65,6 +66,20 @@ const useProps = createHook<Partial<ModalProps>>(
     htmlProps = Box.useProps({
       ...props,
       ...modalProps,
+      ...(!modal
+        ? {
+            wrapElement: (children) => (
+              <Box>
+                {!hideBackdrop && (
+                  <ModalBackdrop>
+                    <div />
+                  </ModalBackdrop>
+                )}
+                {children}
+              </Box>
+            ),
+          }
+        : {}),
     });
 
     const className = useClassName({
@@ -77,15 +92,17 @@ const useProps = createHook<Partial<ModalProps>>(
     return {
       ...htmlProps,
       className,
-      children: (
+      children: modal ? (
         <React.Fragment>
           {!hideBackdrop && (
-            <ModalBackdrop {...omitCSSProps(props)}>
+            <ModalBackdrop {...omitCSSProps(props)} className={undefined}>
               <div />
             </ModalBackdrop>
           )}
           {children}
         </React.Fragment>
+      ) : (
+        children
       ),
     };
   },
