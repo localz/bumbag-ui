@@ -229,11 +229,15 @@ const useProps = createHook<SelectMenuProps>(
     const debouncedInputValue = useDebounce(searchText, 500);
 
     const getOptions = React.useCallback(
-      ({ loadVariables, page, searchText = '' }) => {
+      async ({ loadVariables, page, searchText = '' }) => {
         if (typeof loadOptions === 'function') {
-          if (blockLoad) return { options };
+          if (blockLoad) return new Promise((res) => res({ options }));
 
-          return loadOptions({ page, searchText, variables: loadVariables }).then(({ options: fetchedOptions }) => {
+          return loadOptions({
+            page,
+            searchText,
+            variables: loadVariables,
+          }).then(({ options: fetchedOptions }) => {
             let newOptions = [...options, ...fetchedOptions];
             if (page === 1) {
               newOptions = fetchedOptions;
@@ -474,6 +478,7 @@ const useProps = createHook<SelectMenuProps>(
                     onChange={handleChangeInput}
                     value={searchText}
                     searchInputProps={searchInputProps}
+                    autoFocus={isDropdown}
                   />
                 )}
                 {hasTags && selectedOptions.length > 0 && (
@@ -666,7 +671,7 @@ function SelectMenuButton(props: any) {
 //////////////////////////////////////////////////////////////////
 
 function SelectMenuSearchInput(props: any) {
-  const { onChange, searchInputProps, value, ...restProps } = props;
+  const { autoFocus, onChange, searchInputProps, value, ...restProps } = props;
 
   const { overrides, themeKey } = React.useContext(SelectMenuContext);
 
@@ -691,6 +696,7 @@ function SelectMenuSearchInput(props: any) {
         overrides={overrides}
         placeholder="Type to search..."
         value={value}
+        autoFocus={autoFocus}
         {...searchInputProps}
       />
     </Box>

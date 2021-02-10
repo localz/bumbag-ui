@@ -361,7 +361,7 @@ exports[`defaultProps should render correctly for className 1`] = `
     >
       <div
         aria-label="test"
-        class="emotion-0 emotion-1 emotion-2 test bb-Box bb-ModalBackdrop"
+        class="emotion-0 emotion-1 emotion-2 bb-Box bb-ModalBackdrop"
         data-dialog-ref="test"
         hidden=""
         style="display: none;"
@@ -11535,25 +11535,27 @@ exports[`props should render correctly with non-modal modal 1`] = `
         Toggle
       </button>
       <div
-        aria-label="test"
-        class="emotion-6 emotion-1 emotion-2 bb-Box bb-Modal"
-        data-dialog="true"
-        hidden=""
-        id="test"
-        role="dialog"
-        style="display: none;"
-        tabindex="-1"
+        class="emotion-1 emotion-2 bb-Box"
       >
         <div
-          aria-label="test"
           class="emotion-3 emotion-1 emotion-2 bb-Box bb-ModalBackdrop"
-          data-dialog-ref="test"
           hidden=""
           style="display: none;"
         >
           <div />
         </div>
-        Hello world
+        <div
+          aria-label="test"
+          class="emotion-6 emotion-1 emotion-2 bb-Box bb-Modal"
+          data-dialog="true"
+          hidden=""
+          id="test"
+          role="dialog"
+          style="display: none;"
+          tabindex="-1"
+        >
+          Hello world
+        </div>
       </div>
     </div>
   </div>
@@ -12498,4 +12500,51 @@ exports[`theming Modal.topStart.base should render correctly 1`] = `
     </div>
   </div>
 </body>
+`;
+
+exports[`useContext should render correctly 1`] = `
+Object {
+  "animated": false,
+  "animating": false,
+  "baseId": "bb-id-4",
+  "hide": [Function],
+  "modal": true,
+  "setAnimated": [Function],
+  "setBaseId": [Function],
+  "setModal": [Function],
+  "setVisible": [Function],
+  "show": [Function],
+  "stopAnimation": [Function],
+  "toggle": [Function],
+  "unstable_disclosureRef": Object {
+    "current": .emotion-1 {
+  margin: unset;
+  padding: unset;
+  border: unset;
+  background: unset;
+  font: unset;
+  font-family: inherit;
+  font-size: 100%;
+  box-sizing: border-box;
+}
+
+.emotion-1:focus:not(:focus-visible) {
+  outline: none;
+}
+
+<button
+      aria-controls="bb-id-4"
+      aria-expanded="false"
+      aria-haspopup="dialog"
+      class="emotion-0 emotion-1 emotion-2 bb-Box bb-ModalDisclosure"
+      type="button"
+    >
+      Toggle
+    </button>,
+  },
+  "unstable_idCountRef": Object {
+    "current": 0,
+  },
+  "visible": false,
+}
 `;
